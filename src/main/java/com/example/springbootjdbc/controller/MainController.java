@@ -1,0 +1,38 @@
+package com.example.springbootjdbc.controller;
+
+import com.example.springbootjdbc.dao.BankAccountDAO;
+import com.example.springbootjdbc.exception.BankTransactionException;
+import com.example.springbootjdbc.form.SendMoneyForm;
+import com.example.springbootjdbc.model.BankAccountInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.List;
+
+@Controller
+public class MainController {
+    @Autowired
+    private BankAccountDAO bankAccountDAO;
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String showBankAccounts(Model model) {
+        List<BankAccountInfo> list = bankAccountDAO.getBankAccount();
+        model.addAttribute("accountInfos", list);
+        return "accountsPage";
+    }
+
+    @RequestMapping(value = "/sendMoney", method = RequestMethod.POST)
+    public String processSendMoney(Model model, SendMoneyForm sendMoneyForm) {
+        System.out.println("Send money: "+sendMoneyForm.getAmount());
+        try {
+            bankAccountDAO.sendMoney(sendMoneyForm.getFromAccountId(),sendMoneyForm.getToAccountId(),sendMoneyForm.getAmount());
+        } catch (BankTransactionException e) {
+            model.addAttribute("errorMessage", "Error: " + e.getMessage());
+            return "/sendMoneyPage";
+        }
+        return "redirect:/";
+    }
+}
