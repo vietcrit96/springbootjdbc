@@ -19,9 +19,18 @@ public class MainController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String showBankAccounts(Model model) {
-        List<BankAccountInfo> list = bankAccountDAO.getBankAccount();
+        List<BankAccountInfo> list = bankAccountDAO.getBankAccounts();
         model.addAttribute("accountInfos", list);
         return "accountsPage";
+    }
+    @RequestMapping(value = "/sendMoney", method = RequestMethod.GET)
+    public String viewSendMoneyPage(Model model) {
+
+        SendMoneyForm form = new SendMoneyForm(1L, 2L, 700d);
+
+        model.addAttribute("sendMoneyForm", form);
+
+        return "sendMoneyPage";
     }
 
     @RequestMapping(value = "/sendMoney", method = RequestMethod.POST)
